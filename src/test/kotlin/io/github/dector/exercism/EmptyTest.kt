@@ -1,4 +1,4 @@
-package io.github.dector.exercismtools
+package io.github.dector.exercism
 
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
