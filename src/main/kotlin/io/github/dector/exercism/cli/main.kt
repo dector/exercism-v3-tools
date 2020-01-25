@@ -87,9 +87,9 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
 
                     when {
                         existingConfig.hasExerciseWith(enteredSlug) ->
-                            System.err.println("Err: Exercise with this slug already exists")
+                            println("Err: Exercise with this slug already exists")
                         enteredSlug.isBlank() ->
-                            System.err.println("Err: Name shouldn't be blank")
+                            println("Err: Name shouldn't be blank")
                         else -> {
                             println("OK")
                             slug = enteredSlug
@@ -101,7 +101,27 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
                 existingConfig.newExercise(slug!!)
             }
 
-            println("Writing to `config.json`...")
+            println("Creating files tree...")
+            run {
+                val exerciseDir = projectDir.resolve("exercises/concept/${newExercise.slug}")
+                    .also { it.mkdirs() }
+
+                projectDir.resolve(".templates/exercise")
+                    .copyRecursively(exerciseDir)
+
+                val sourceFileName = newExercise.slug
+                    .split("-").joinToString("") { it.capitalize() }
+                exerciseDir.resolve("src/main/kotlin").also {
+                    it.mkdirs()
+                    it.resolve("$sourceFileName.kt").createNewFile()
+                }
+                exerciseDir.resolve("src/test/kotlin").also {
+                    it.mkdirs()
+                    it.resolve("${sourceFileName}Test.kt").createNewFile()
+                }
+            }
+
+            println("Writing `config.json`...")
             run {
                 val config = loadTrackConfig(projectDir)
                     .let { config ->
@@ -112,6 +132,7 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
                 config.saveToProject(projectDir)
             }
 
+            println("Done.")
         }
     }
 }
