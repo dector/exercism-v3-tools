@@ -12,6 +12,8 @@ dependencies {
     implementation(Deps.moshi_adapters)
     implementation(Deps.moshi_kotlin)
 
+    implementation(Deps.clikt)
+
     testImplementation(Deps.kotlin_test)
 }
 

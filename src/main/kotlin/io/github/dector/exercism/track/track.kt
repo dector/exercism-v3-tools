@@ -11,7 +11,7 @@ data class TrackConfig(
     val blurb: String,
     val exercises: Exercises,
     @Json(name = "online_editor") val onlineEditor: OnlineEditor,
-    @Json(name = "solution_pattern") val solutionPattern: String,
+    @Json(name = "solution_pattern") val solutionPattern: String?,
     val active: Boolean
 ) {
 

@@ -5,6 +5,8 @@ object Deps {
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
     const val moshi_adapters = "com.squareup.moshi:moshi-adapters:${Versions.moshi}"
     const val moshi_kotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
+
+    const val clikt = "com.github.ajalt:clikt:${Versions.clikt}"
 }
 
 object Versions {
@@ -13,4 +15,5 @@ object Versions {
     const val kotlin_test = "3.4.2"
 
     const val moshi = "1.9.2"
+    const val clikt = "2.3.0"
 }
