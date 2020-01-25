@@ -33,6 +33,28 @@ data class TrackConfig(
     )
 }
 
+fun TrackConfig.Exercises.all(): List<TrackConfig.Exercise> =
+    concept + practice
+
+fun TrackConfig.newExercise(slug: String): TrackConfig.Exercise {
+    return TrackConfig.Exercise(
+        slug = slug,
+        uuid = newExerciseUuid(),
+        concepts = emptyList(),
+        prerequisites = emptyList()
+    )
+}
+
+private fun TrackConfig.newExerciseUuid(): UUID {
+    var uuid = UUID.randomUUID()
+
+    while (exercises.all().any() { it.uuid == uuid }) {
+        uuid = UUID.randomUUID()
+    }
+
+    return uuid
+}
+
 private fun File.configFile() = resolve("config.json")
 
 fun loadTrackConfig(dir: File): TrackConfig {
