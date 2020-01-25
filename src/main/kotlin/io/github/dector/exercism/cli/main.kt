@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
-import io.github.dector.exercism.track.all
+import io.github.dector.exercism.track.hasExerciseWith
 import io.github.dector.exercism.track.loadTrackConfig
 import io.github.dector.exercism.track.newExercise
 import io.github.dector.exercism.track.saveToProject
@@ -77,21 +77,28 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
             val existingConfig = loadTrackConfig(projectDir)
 
             val newExercise = run {
-                fun String.isValidSlug() = isNotBlank() &&
-                    (existingConfig.exercises.all().none { it.slug == this })
+                var slug: String? = null
 
-                var slug = ""
-                while (!slug.isValidSlug()) {
-                    println("Enter exercise slug (e.g. 'Reverse string'):")
-                    slug = readLine()!!
-                        .map { if (it.isLetterOrDigit()) it else ' ' }
-                        .joinToString("")
-                        .split(" ")
-                        .map(String::trim)
-                        .joinToString("-") { it.toLowerCase() }
+                var askForName = true
+                while (askForName) {
+                    print("Enter exercise name (e.g. 'Reverse string'): ")
+                    val enteredSlug = readLine()!!
+                        .asExerciseSlug()
+
+                    when {
+                        existingConfig.hasExerciseWith(enteredSlug) ->
+                            System.err.println("Err: Exercise with this slug already exists")
+                        enteredSlug.isBlank() ->
+                            System.err.println("Err: Name shouldn't be blank")
+                        else -> {
+                            println("OK")
+                            slug = enteredSlug
+                            askForName = false
+                        }
+                    }
                 }
 
-                existingConfig.newExercise(slug)
+                existingConfig.newExercise(slug!!)
             }
 
             println("Writing to `config.json`...")
@@ -108,3 +115,10 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
         }
     }
 }
+
+private fun String.asExerciseSlug() = this
+    .map { if (it.isLetterOrDigit()) it else ' ' }
+    .joinToString("")
+    .split(" ")
+    .map(String::trim)
+    .joinToString("-") { it.toLowerCase() }

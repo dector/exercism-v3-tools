@@ -45,6 +45,9 @@ fun TrackConfig.newExercise(slug: String): TrackConfig.Exercise {
     )
 }
 
+fun TrackConfig.hasExerciseWith(slug: String) =
+    exercises.all().any { it.slug == slug }
+
 private fun TrackConfig.newExerciseUuid(): UUID {
     var uuid = UUID.randomUUID()
 
