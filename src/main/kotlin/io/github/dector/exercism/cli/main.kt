@@ -113,10 +113,12 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
                     .split("-").joinToString("") { it.capitalize() }
                 exerciseDir.resolve("src/main/kotlin").also {
                     it.mkdirs()
+                    it.resolve(".keep").delete()
                     it.resolve("$sourceFileName.kt").createNewFile()
                 }
                 exerciseDir.resolve("src/test/kotlin").also {
                     it.mkdirs()
+                    it.resolve(".keep").delete()
                     it.resolve("${sourceFileName}Test.kt").createNewFile()
                 }
             }
