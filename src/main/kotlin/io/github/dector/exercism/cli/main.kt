@@ -5,11 +5,17 @@ import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
+import io.github.dector.exercism.track.TrackConfig
 import io.github.dector.exercism.track.loadTrackConfig
+import io.github.dector.exercism.track.saveToProject
 import java.io.File
+import java.util.UUID
 
 fun main(args: Array<String>) {
     MainCommand().subcommands(
+        ExerciseCommand().subcommands(
+            ExerciseCommand.Create()
+        ),
         DoctorCommand()
     ).main(args)
 }
@@ -53,6 +59,57 @@ class DoctorCommand : CliktCommand(name = "doctor") {
                     println("$uuid -> $exercisesStr")
                 }
             }
+        }
+    }
+}
+
+class ExerciseCommand : CliktCommand(name = "exercise") {
+    override fun run() {
+    }
+
+    class Create : CliktCommand(name = "create") {
+
+        private val projectDir: File by option("--projectDir")
+            .file(exists = true, folderOkay = true, fileOkay = false)
+            .required()
+
+        override fun run() {
+            var slug = ""
+            val uuid = UUID.randomUUID()
+            val concepts = mutableListOf<String>()
+            val prerequisites = mutableListOf<String>()
+
+            // slug
+            run {
+                println("Enter exercise slug (e.g. 'Reverse string'):")
+                val value = readLine()!!
+                    .map { if (it.isLetterOrDigit()) it else ' ' }
+                    .joinToString("")
+                    .trim()
+                    .split(" ").joinToString("-") { it.toLowerCase() }
+
+                slug = value
+            }
+
+            // build exercise
+            val exercise = TrackConfig.Exercise(
+                slug = slug,
+                uuid = uuid,
+                concepts = concepts,
+                prerequisites = prerequisites
+            )
+
+            println("Writing to `config.json`...")
+
+            // merge with existing config
+            val config = loadTrackConfig(projectDir)
+                .let { config ->
+                    val newConceptExercises = config.exercises.concept + exercise
+                    val newExercises = config.exercises.copy(concept = newConceptExercises)
+                    config.copy(exercises = newExercises)
+                }
+
+            config.saveToProject(projectDir)
         }
     }
 }

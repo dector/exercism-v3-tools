@@ -33,11 +33,24 @@ data class TrackConfig(
     )
 }
 
+private fun File.configFile() = resolve("config.json")
+
 fun loadTrackConfig(dir: File): TrackConfig {
-    val file = dir.resolve("config.json")
+    val file = dir.configFile()
 
     return moshi()
         .adapter(TrackConfig::class.java)
         .fromJson(file.readText())
         ?: error("Can't load track config from `${file.absolutePath}`")
+}
+
+fun TrackConfig.saveToProject(dir: File) {
+    val file = dir.configFile()
+    check(file.exists()) { "Config file '${file.absolutePath}' not found." }
+
+    val json = moshi()
+        .adapter(TrackConfig::class.java)
+        .indent("  ")
+        .toJson(this)
+    file.writeText(json)
 }
