@@ -121,6 +121,9 @@ class ExerciseCommand : CliktCommand(name = "exercise") {
                     it.resolve(".keep").delete()
                     it.resolve("${sourceFileName}Test.kt").createNewFile()
                 }
+
+                exerciseDir.resolve("gradlew").setExecutable(true)
+                exerciseDir.resolve("gradle.bat").setExecutable(true)
             }
 
             println("Writing `config.json`...")
