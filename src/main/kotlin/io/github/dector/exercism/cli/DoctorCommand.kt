@@ -6,18 +6,20 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import io.github.dector.exercism.checks.Check
 import io.github.dector.exercism.checks.CheckContext
+import io.github.dector.exercism.checks.requiredImplementationExists
 import io.github.dector.exercism.checks.uniqueIdsForExercises
 import io.github.dector.exercism.track.loadTrackConfig
 import java.io.File
 
 class DoctorCommand : CliktCommand(name = "doctor") {
 
-    val projectDir: File by option("--projectDir")
+    private val projectDir: File by option("--projectDir")
         .file(exists = true, folderOkay = true, fileOkay = false)
         .required()
 
     private val checks = mapOf<String, Check>(
-        "Unique uuids" to ::uniqueIdsForExercises
+        "Unique uuids" to ::uniqueIdsForExercises,
+        "Required implementation" to ::requiredImplementationExists
     )
 
     override fun run() {
@@ -31,10 +33,13 @@ class DoctorCommand : CliktCommand(name = "doctor") {
         println("Concept exercises: ${config.exercises.concept.size}")
         println("Practice exercises: ${config.exercises.practice.size}")
 
-        val context = CheckContext(config)
+        val context = CheckContext(
+            projectDir = projectDir,
+            trackConfig = config
+        )
 
         checks.forEach { (name, check) ->
-            print("[Check] $name: ")
+            println("[Check] $name:")
             check(context)
         }
     }

@@ -67,7 +67,11 @@ private fun TrackConfig.newExerciseUuid(): UUID {
     return uuid
 }
 
-private fun File.configFile() = resolve("config.json")
+private fun File.configFile(): File = resolve("config.json")
+fun File.exerciseDir(slug: String, isConcept: Boolean): File {
+    val part = if (isConcept) "concept" else "practice"
+    return resolve("exercises/$part/$slug")
+}
 
 fun loadTrackConfig(dir: File): TrackConfig {
     val file = dir.configFile()
