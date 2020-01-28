@@ -6,20 +6,32 @@ typealias Check = (CheckContext) -> Unit
 
 data class CheckContext(val trackConfig: TrackConfig)
 
+fun CheckContext.reportOk() {
+    println("OK")
+}
+
+fun CheckContext.reportError(message: String, details: String? = null) {
+    println("ERR")
+    println(message)
+
+    if (details != null) println(details)
+}
+
 fun uniqueIdsForExercises(context: CheckContext) {
     val allExercises = context.trackConfig.exercises.let { it.concept + it.practice }
     val duplicatedExercises = allExercises.groupBy { it.uuid }
         .filter { it.value.size > 1 }
 
     if (duplicatedExercises.isEmpty()) {
-        println("OK")
+        context.reportOk()
     } else {
-        println("ERR")
-        println("This exercises have duplicated UUIDs:")
+        val details = duplicatedExercises
+            .map { (uuid, exercises) ->
+                val exercisesStr = exercises.joinToString(prefix = "[", postfix = "]") { it.slug }
+                "$uuid -> $exercisesStr"
+            }
+            .joinToString("\n")
 
-        duplicatedExercises.forEach { (uuid, exercises) ->
-            val exercisesStr = exercises.joinToString(prefix = "[", postfix = "]") { it.slug }
-            println("$uuid -> $exercisesStr")
-        }
+        context.reportError("This exercises have duplicated UUIDs:", details)
     }
 }
