@@ -36,13 +36,22 @@ data class TrackConfig(
 fun TrackConfig.Exercises.all(): List<TrackConfig.Exercise> =
     concept + practice
 
-fun TrackConfig.newExercise(slug: String): TrackConfig.Exercise {
-    return TrackConfig.Exercise(
+fun TrackConfig.newExercise(slug: String): Pair<TrackConfig, TrackConfig.Exercise> {
+    val exercise = TrackConfig.Exercise(
         slug = slug,
         uuid = newExerciseUuid(),
         concepts = emptyList(),
         prerequisites = emptyList()
     )
+
+
+    val newConfig = run {
+        val newConceptExercises = exercises.concept + exercise
+        val newExercises = exercises.copy(concept = newConceptExercises)
+        copy(exercises = newExercises)
+    }
+
+    return newConfig to exercise
 }
 
 fun TrackConfig.hasExerciseWith(slug: String) =
