@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./gradlew run -q --args "'$@' --projectDir ../exercism-v3/languages/kotlin"
