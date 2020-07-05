@@ -1,6 +1,6 @@
 package io.github.dector.exercism.cli
 
-import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.NoRunCliktCommand
 import com.github.ajalt.clikt.core.subcommands
 
 fun main(args: Array<String>) {
@@ -12,7 +12,4 @@ fun main(args: Array<String>) {
     ).main(args)
 }
 
-class MainCommand : CliktCommand() {
-    override fun run() {
-    }
-}
+class MainCommand : NoRunCliktCommand()
